@@ -99,7 +99,6 @@ namespace LibrayBackEnd.Controllers
         public async Task<int> BookQualityCount(Book book)
         {
 
-
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
 
             var count = connection.Query<Book>("select * from books where quality = @Quality", book).Count();

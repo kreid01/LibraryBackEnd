@@ -1,9 +1,18 @@
 ﻿namespace LibrayBackEnd.Models
 {
-    public class UserDto
+    public class UserRegisterDto
     {
-        public string FirstName { get; set; } = string.Empty;
+        public string FirstName { get; set; } 
 
-        public string Password { get; set; } = string.Empty;
+        public string LastName { get; set; }
+
+        public string Email { get; set; }
+
+        public string Password { get; set; }
+
+        public byte[]? PasswordHash { get; set; }
+
+        public byte[]? PasswordSalt { get; set; }
+
     }
 }

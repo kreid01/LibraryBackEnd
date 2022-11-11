@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlTypes;
 
-namespace LibrayBackEnd
+namespace LibrayBackEnd.Models
 {
     public class Book
     {
@@ -21,13 +21,12 @@ namespace LibrayBackEnd
         public string Genre { get; set; }
 
         public string Summary { get; set; }
-        
+
         public string Published { get; set; }
 
-        public bool IsAvailable { get; set;}
+        public bool IsAvailable { get; set; }
 
-        public string Cover { get; set;}
+        public string Cover { get; set; }
     }
 
 }
-    

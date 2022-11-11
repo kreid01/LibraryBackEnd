@@ -1,7 +1,12 @@
-﻿using LibrayBackEnd.Models;
+﻿using Dapper;
+using LibrayBackEnd.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
@@ -9,35 +14,57 @@ namespace LibrayBackEnd.Controllers
 {
     public class UserController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IConfiguration _config;
         public static User user = new User();
-        
 
-        public UserController(IConfiguration configuration) 
+
+        public UserController(IConfiguration config)
         {
-            _configuration = configuration;
+            _config = config;
         }
+
+        [HttpGet]
+        [Route("users")]
+        public async Task<IEnumerable<User>> GetUsers()
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            return await connection.QueryAsync<User>("select * from users");
+        }
+
+
 
         [HttpPost]
         [Route("/register")]
 
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(UserRegisterDto request)
         {
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            user.Username = request.Username;
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
 
-            return Ok(user);
+            request.PasswordHash = passwordHash;
+            request.PasswordSalt = passwordSalt;
+
+            await connection.ExecuteAsync("insert into users (firstName, lastName, email, passwordHash, passwordSalt) " +
+                    "values (@FirstName, @LastName, @Email, @passwordHash, @passwordSalt)", request);
+
+
+
+            return Ok();
 
         }
 
         [HttpPost]
         [Route("/login")]
-        public async Task<ActionResult<string>> Login(UserDto request)
+        public async Task<ActionResult<string>> Login(UserLoginDto request)
         {
-            if (user.Username == request.Username)
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var user = await connection.QueryFirstAsync<User>("select * from users where email = @Email",
+                new { Email = request.Email });
+
+            if (user.Email != request.Email)
             {
                 return BadRequest("User not found");
             }
@@ -45,8 +72,27 @@ namespace LibrayBackEnd.Controllers
             {
                 return BadRequest("Wrong password");
             }
+
             string token = CreateToken(user);
-            return Ok("");
+
+            var response = new ResponseDto();
+
+            response.Token = token;
+            response.UserId = user.Id;
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("user/{userId}")]
+        [Authorize]
+        public async Task<ActionResult<User>> GetUserById(int userId)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var user = await connection.QueryFirstAsync<User>("select * from users where id = @Id",
+                new { Id = userId });
+
+            return Ok(user);
         }
 
 
@@ -54,11 +100,13 @@ namespace LibrayBackEnd.Controllers
         {
             List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.GivenName, user.FirstName,
+                ClaimTypes.Name, user.LastName),
+                new Claim("userId", $"{user.Id}")
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings: Token").Value));
+                _config.GetSection("AppSettings:Token").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);
 
