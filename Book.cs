@@ -23,6 +23,10 @@ namespace LibrayBackEnd
         public string Summary { get; set; }
         
         public string Published { get; set; }
+
+        public bool IsAvailable { get; set;}
+
+        public string Cover { get; set;}
     }
 
 }
