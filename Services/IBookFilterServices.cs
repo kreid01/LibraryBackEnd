@@ -1,4 +1,4 @@
-﻿using LibrayBackEnd.Models;
+﻿using LibrayBackEnd.Models.Books;
 
 namespace LibrayBackEnd.Services
 {

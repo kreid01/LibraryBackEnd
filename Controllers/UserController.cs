@@ -1,5 +1,7 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using LibrayBackEnd.Models;
+using LibrayBackEnd.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,12 +17,12 @@ namespace LibrayBackEnd.Controllers
     public class UserController : ControllerBase
     {
         private readonly IConfiguration _config;
-        public static User user = new User();
+        private readonly IMapper _mapper;
 
-
-        public UserController(IConfiguration config)
+        public UserController(IConfiguration config, IMapper mapper)
         {
             _config = config;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -37,7 +39,7 @@ namespace LibrayBackEnd.Controllers
         [HttpPost]
         [Route("/register")]
 
-        public async Task<ActionResult<User>> Register(UserRegisterDto request)
+        public async Task<ActionResult<User>> Register(UserRequestDto request)
         {
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -75,7 +77,7 @@ namespace LibrayBackEnd.Controllers
 
             string token = CreateToken(user);
 
-            var response = new ResponseDto();
+            var response = new AuthResponseDto();
 
             response.Token = token;
             response.UserId = user.Id;
@@ -92,7 +94,7 @@ namespace LibrayBackEnd.Controllers
             var user = await connection.QueryFirstAsync<User>("select * from users where id = @Id",
                 new { Id = userId });
 
-            return Ok(user);
+            return Ok(_mapper.Map<UserResponseDto>(user));
         }
 
 

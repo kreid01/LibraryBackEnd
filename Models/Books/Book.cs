@@ -1,6 +1,6 @@
 ﻿using System.Data.SqlTypes;
 
-namespace LibrayBackEnd.Models
+namespace LibrayBackEnd.Models.Books
 {
     public class Book
     {

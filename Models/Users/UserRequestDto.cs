@@ -1,8 +1,8 @@
-﻿namespace LibrayBackEnd.Models
+﻿namespace LibrayBackEnd.Models.Users
 {
-    public class UserRegisterDto
+    public class UserRequestDto
     {
-        public string FirstName { get; set; } 
+        public string FirstName { get; set; }
 
         public string LastName { get; set; }
 

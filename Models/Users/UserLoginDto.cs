@@ -1,4 +1,4 @@
-﻿namespace LibrayBackEnd.Models
+﻿namespace LibrayBackEnd.Models.Users
 {
     public class UserLoginDto
     {

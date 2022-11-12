@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using LibrayBackEnd.Models;
+using LibrayBackEnd.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;

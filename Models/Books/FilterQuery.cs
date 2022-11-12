@@ -1,4 +1,4 @@
-﻿namespace LibrayBackEnd.Models
+﻿namespace LibrayBackEnd.Models.Books
 {
     public class FilterQuery
     {
