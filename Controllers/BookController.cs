@@ -19,7 +19,7 @@ namespace LibrayBackEnd.Controllers
         }
 
         [HttpGet]
-        [Route("books")]
+        [Route("/books")]
         public async Task<ActionResult<List<Book>>> GetAllBooks([FromQuery] PagingParameters pagingParameters, FilterQuery filters)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -38,7 +38,7 @@ namespace LibrayBackEnd.Controllers
 
 
         [HttpGet]
-        [Route("books/{bookId}")]
+        [Route("/books/{bookId}")]
         public async Task<ActionResult<Book>> GetBook(int bookId)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -51,7 +51,7 @@ namespace LibrayBackEnd.Controllers
 
 
         [HttpGet]
-        [Route("books/multiple")]
+        [Route("/books/multiple")]
         public async Task<ActionResult<Book>> GetBooks(List<int> bookIds)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -69,7 +69,7 @@ namespace LibrayBackEnd.Controllers
 
 
         [HttpPost]
-        [Route("books")]
+        [Route("/books")]
         public async Task<ActionResult<Book>> CreateBook(Book book)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -87,7 +87,7 @@ namespace LibrayBackEnd.Controllers
         }
 
         [HttpPut]
-        [Route("books")]
+        [Route("/books")]
         public async Task<ActionResult<Book>> UpdateBook(Book book)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -99,7 +99,7 @@ namespace LibrayBackEnd.Controllers
         }
 
         [HttpDelete]
-        [Route("books/{bookId}")]
+        [Route("/books/{bookId}")]
         public async Task<ActionResult<Book>> DeleteBook(int bookId)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));

@@ -36,6 +36,15 @@ namespace LibrayBackEnd.Controllers
             return await connection.QueryAsync<Address>("select * from addresses");
         }
 
+        [HttpGet]
+        [Route("addresses/{userId}")]
+        public async Task<Address> GetUserAddress(int userId)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            return await connection.QueryFirstOrDefaultAsync<Address>("select * from addresses where userId = @userId", new { userId =  userId});
+        }
+
         [HttpPost]
         [Route("address")]
         public async Task<ActionResult<Address>> CreateAddress(Address address)

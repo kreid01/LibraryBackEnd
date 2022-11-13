@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dapper;
 using LibrayBackEnd.Models;
+using LibrayBackEnd.Models.Books;
 using LibrayBackEnd.Models.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -47,14 +48,42 @@ namespace LibrayBackEnd.Controllers
 
             request.PasswordHash = passwordHash;
             request.PasswordSalt = passwordSalt;
+            request.IsAdmin = false;
 
-            await connection.ExecuteAsync("insert into users (firstName, lastName, email, passwordHash, passwordSalt) " +
-                    "values (@FirstName, @LastName, @Email, @passwordHash, @passwordSalt)", request);
+            await connection.ExecuteAsync("insert into users (firstName, lastName, email, passwordHash, passwordSalt, isAdmin) " +
+                    "values (@FirstName, @LastName, @Email, @passwordHash, @passwordSalt, @IsAdmin)", request);
 
 
 
             return Ok();
 
+        }
+
+
+        [HttpPut]
+        [Route("/user")]
+        public async Task<ActionResult<User>> UpdateUser(UserAdminDto user)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var userToUpdate = await connection.QueryFirstAsync<User>("select * from users where id = @id", new { id = user.Id});
+
+            userToUpdate.IsAdmin = true;
+
+           await connection.ExecuteAsync("update users set firstName = @FirstName, lastName = @LastName, email = @Email, passwordHash = @PasswordHash, passwordSalt = @PasswordSalt, " +
+                "isAdmin = @IsAdmin where id = @Id", userToUpdate);
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("users/{userId}")]
+        public async Task<ActionResult<Book>> DeleteBook(int userId)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            await connection.ExecuteAsync("delete from users where id = @Id", new { Id = userId });
+            return Ok();
         }
 
         [HttpPost]
@@ -81,6 +110,7 @@ namespace LibrayBackEnd.Controllers
 
             response.Token = token;
             response.UserId = user.Id;
+            response.IsAdmin = user.IsAdmin;
             return Ok(response);
         }
 
