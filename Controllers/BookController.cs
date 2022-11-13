@@ -50,6 +50,24 @@ namespace LibrayBackEnd.Controllers
         }
 
 
+        [HttpGet]
+        [Route("books/multiple")]
+        public async Task<ActionResult<Book>> GetBooks(List<int> bookIds)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var books = new List<Book>();
+
+            foreach (var id in bookIds)
+            {
+                books.Add(await connection.QueryFirstOrDefaultAsync <Book>("select * from books where id = @Id",
+                  new { Id = id }));
+            }
+
+            return Ok(books);
+        }
+
+
         [HttpPost]
         [Route("books")]
         public async Task<ActionResult<Book>> CreateBook(Book book)

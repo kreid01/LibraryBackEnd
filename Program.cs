@@ -14,11 +14,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.Configure<StripeOptions>(options =>
-{
-    options.PublishableKey = builder.Configuration.GetSection("AppSettings:StripePublishableKey").Value;
-    options.SecretKey = builder.Configuration.GetSection("AppSettings:StripeSecretKey").Value;
-});
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddSwaggerGen(options =>
