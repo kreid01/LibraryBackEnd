@@ -1,8 +1,6 @@
-﻿using System.Data.SqlTypes;
-
-namespace LibrayBackEnd.Models.Books
+﻿namespace LibrayBackEnd.Models.Books
 {
-    public class Book
+    public class BookResponseDto
     {
         public int Id { get; set; }
 
@@ -28,7 +26,7 @@ namespace LibrayBackEnd.Models.Books
 
         public string Cover { get; set; }
 
-       
-    }
+        public int Quantity { get; set; }
 
+    }
 }

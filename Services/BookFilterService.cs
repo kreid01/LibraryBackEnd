@@ -52,5 +52,12 @@ namespace LibrayBackEnd.Services
             return books.GroupBy(x => x.Title).Select(x => x.First()).ToList();
 
         }
+
+        public async Task<int> BookNameCount(string value, IEnumerable<BookResponseDto> books)
+        {
+
+            return books.Where(r => r.Title == value && r.IsAvailable == true).Count();
+        }
+
     }
 }

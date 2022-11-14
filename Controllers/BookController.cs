@@ -20,7 +20,7 @@ namespace LibrayBackEnd.Controllers
 
         [HttpGet]
         [Route("/books")]
-        public async Task<ActionResult<List<Book>>> GetAllBooks([FromQuery] PagingParameters pagingParameters, FilterQuery filters)
+        public async Task<ActionResult<List<BookResponseDto>>> GetAllBooks([FromQuery] PagingParameters pagingParameters, FilterQuery filters)
         {
             using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
 
@@ -49,6 +49,35 @@ namespace LibrayBackEnd.Controllers
             return Ok(book);
         }
 
+        [HttpGet]
+        [Route("/books/conditions/{bookId}")]
+        public async Task<ActionResult<List<Book>>> GetOtherConditions(int bookId)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var book = await connection.QueryFirstAsync<Book>("select * from books where id = @Id",
+                new { Id = bookId });
+
+            var books = await connection.QueryAsync<Book>("select * from books where title = @Title", book);
+
+            return Ok(books);
+        }
+
+        [HttpGet]
+        [Route("/books/quantity/{bookId}")]
+        public async Task<ActionResult<int>> GetBookQuantity(int bookId)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var book = await connection.QueryFirstAsync<Book>("select * from books where id = @Id",
+                new { Id = bookId });
+
+            var books = await connection.QueryAsync<Book>("select * from books where title = @Title and quality = @Quality and isAvailable = @IsAvailable", book);
+
+            var quantity = books.Count();
+
+            return Ok(quantity);
+        }
 
         [HttpGet]
         [Route("/books/multiple")]
@@ -107,6 +136,8 @@ namespace LibrayBackEnd.Controllers
             await connection.ExecuteAsync("delete from books where id = @Id", new { Id = bookId });
             return Ok(await SelectAllBooks(connection));
         }
+
+      
 
 
         private static async Task<IEnumerable<Book>> SelectAllBooks(SqlConnection connection)
