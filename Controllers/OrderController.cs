@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Net;
 
 namespace LibrayBackEnd.Controllers
@@ -27,6 +28,31 @@ namespace LibrayBackEnd.Controllers
           
                 
             return await connection.QueryAsync<Order>("select * from orders");
+        }
+
+
+        [HttpGet]
+        [Route("orders/fromBook")]
+        public async Task<Order> GetOrdersFromBook(int id)
+        {
+            using var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+
+            var orders = await connection.QueryAsync<Order>("select * from orders");
+
+            var order = orders.Where(_ => _.BookIds.Split(" ").Contains(Convert.ToString(id))).FirstOrDefault();
+
+            return order;
+        }
+
+        [HttpGet]
+        [Route("orders/created")]
+        public async Task<double> GetTimeSinceOrder(string date)
+        {
+            var today = DateTime.UtcNow;
+
+            var orderDate = DateTime.Parse(date);
+
+            return ((today - orderDate).TotalDays);
         }
 
         [HttpPost]

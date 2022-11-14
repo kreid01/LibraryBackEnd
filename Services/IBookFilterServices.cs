@@ -13,6 +13,9 @@ namespace LibrayBackEnd.Services
         Task<IEnumerable<Book>> FilterBooksOnSort(string sortQuery, IEnumerable<Book> books);
 
         Task<IEnumerable<Book>> UniqueBookList(IEnumerable<Book> books);
+
+        Task<int> BookNameCount(string value, IEnumerable<BookResponseDto> books);
+
     }
 
 }
