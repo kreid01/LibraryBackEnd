@@ -27,8 +27,9 @@ namespace LibrayBackEnd.Models.Books
         public bool IsAvailable { get; set; }
 
         public string Cover { get; set; }
+        
+        public int CurrentOwnerId { get; set; }
 
-       
     }
 
 }

@@ -16,6 +16,11 @@ namespace LibrayBackEnd.Services
             {
                 books = await FilterBooksOnSearch(filters.SearchQuery, books);
             }
+            if (filters.SortFilter != null)
+            {
+                books = await FilterBooksOnSort(filters.SortFilter, books);
+
+            }
 
             return books;
 
@@ -44,7 +49,27 @@ namespace LibrayBackEnd.Services
 
         public async Task<IEnumerable<Book>> FilterBooksOnSort(string sortQuery, IEnumerable<Book> books)
         {
-            throw new NotImplementedException();
+            if (sortQuery == "Price+")
+            {
+                books = books.OrderBy(r => r.Price).ToList();
+            }
+
+            if (sortQuery == "Price-")
+            {
+                books = books.OrderByDescending(r => r.Price).ToList();
+            }
+
+            if (sortQuery == "Release+")
+            {
+                books = books.OrderBy(r => r.Published).ToList();
+            }
+
+            if (sortQuery == "Release-")
+            {
+                books = books.OrderByDescending(r => r.Published).ToList();
+            }
+            return books;
+   
         }
 
         public async Task<IEnumerable<Book>> UniqueBookList(IEnumerable<Book> books)
